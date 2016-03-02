@@ -6,35 +6,69 @@ import json
 import curses
 import random
 
-titles = ["""
- ,--.--------.  .=-.-.  _,.----.              
-/==/,  -   , -\/==/_ /.' .' -   \             
-\==\.-.  - ,-./==|, |/==/  ,  ,-'             
- `--`\==\- \  |==|  ||==|-   |  .             
-      \==\_ \ |==|- ||==|_   `-' \            
-      |==|- | |==| ,||==|   _  , |            
-      |==|, | |==|- |\==\.       /            
-      /==/ -/ /==/. / `-.`.___.-'             
-      `--`--` `--`-`                          
- ,--.--------.   ,---.       _,.----.         
-/==/,  -   , -\.--.'  \    .' .' -   \        
-\==\.-.  - ,-./\==\-/\ \  /==/  ,  ,-'        
- `--`\==\- \   /==/-|_\ | |==|-   |  .        
-      \==\_ \  \==\,   - \|==|_   `-' \       
-      |==|- |  /==/ -   ,||==|   _  , |       
-      |==|, | /==/-  /\ - \==\.       /       
-      /==/ -/ \==\ _.\=\.-'`-.`.___.-'        
-      `--`--`  `--`                           
- ,--.--------.   _,.---._        ,----.       
-/==/,  -   , -\,-.' , -  `.   ,-.--` , \      
-\==\.-.  - ,-./==/_,  ,  - \ |==|-  _.-`      
- `--`\==\- \ |==|   .=.     ||==|   `.-.      
-      \==\_ \|==|_ : ;=:  - /==/_ ,    /      
-      |==|- ||==| , '='     |==|    .-'       
-      |==|, | \==\ -    ,_ /|==|_  ,`-._      
-      /==/ -/  '.='. -   .' /==/ ,     /      
-      `--`--`    `--`--''   `--`-----`` 
-  """]
+titles = [
+"""
+|''||''|  ||                 
+   ||    ...    ....         
+   ||     ||  .|   ''        
+   ||     ||  ||             
+  .||.   .||.  '|...'        
+                             
+                             
+|''||''|                     
+   ||     ....     ....      
+   ||    '' .||  .|   ''     
+   ||    .|' ||  ||          
+  .||.   '|..'|'  '|...'     
+                             
+                             
+|''||''|                 .|. 
+   ||      ...     ....  ||| 
+   ||    .|  '|. .|...|| '|' 
+   ||    ||   || ||       |  
+  .||.    '|..|'  '|...'  .  
+                         '|' 
+""",
+"""
+_/_/_/_/_/  _/                     
+   _/            _/_/_/            
+  _/      _/  _/                   
+ _/      _/  _/                    
+_/      _/    _/_/_/               
+_/_/_/_/_/                         
+   _/      _/_/_/    _/_/_/        
+  _/    _/    _/  _/               
+ _/    _/    _/  _/                
+_/      _/_/_/    _/_/_/           
+_/_/_/_/_/                    _/   
+   _/      _/_/      _/_/    _/    
+  _/    _/    _/  _/_/_/_/  _/     
+ _/    _/    _/  _/                
+_/      _/_/      _/_/_/  _/       
+                                
+""",
+"""
+
+
+TTTTTTT iii               
+  TTT         cccc        
+  TTT   iii cc            
+  TTT   iii cc            
+  TTT   iii  ccccc        
+                          
+TTTTTTT                   
+  TTT     aa aa   cccc    
+  TTT    aa aaa cc        
+  TTT   aa  aaa cc        
+  TTT    aaa aa  ccccc    
+                          
+TTTTTTT               !!! 
+  TTT    oooo    eee  !!! 
+  TTT   oo  oo ee   e !!! 
+  TTT   oo  oo eeeee      
+  TTT    oooo   eeeee !!! 
+""",
+]
 game_state = json.loads(open("./fixture.json").read())
 
 # set up global variables
@@ -42,18 +76,29 @@ board_size = game_state["board"]["size"]
 origin_x = 0
 origin_y = 0
 border_width = 1
-square_size = 7
+square_size = 9
 tile_size = square_size + border_width
 total_board_size = square_size * board_size + (border_width * board_size)
 
+# establish colors
+standard_colors = 1
+border_colors = 2
+player_one_colors = 3
+player_two_colors = 4
+
 def main(screen):
   assert curses.has_colors(), "This game requires a color terminal."
+  curses.init_pair(standard_colors, curses.COLOR_WHITE, curses.COLOR_BLACK)
+  curses.init_pair(border_colors, curses.COLOR_BLACK, curses.COLOR_WHITE)
+  curses.init_pair(player_one_colors, curses.COLOR_BLACK, curses.COLOR_RED)
+  curses.init_pair(player_two_colors, curses.COLOR_WHITE, curses.COLOR_BLUE)
   curses.curs_set(0)
   curses.mousemask(1)
   show_title(screen)
   game_loop(screen)
 
 def show_title(screen):
+  screen.attron(curses.color_pair(standard_colors))
   screen.clear()
   title = random.choice(titles)
   screen.addstr(0,0,title)
@@ -74,15 +119,6 @@ def game_loop(screen):
 
 def render_board(screen,game_state):
   screen.clear()
-  # establish colors
-  standard_colors = 1
-  border_colors = 2
-  player_one_colors = 3
-  player_two_colors = 4
-  curses.init_pair(standard_colors, curses.COLOR_WHITE, curses.COLOR_BLACK)
-  curses.init_pair(border_colors, curses.COLOR_BLACK, curses.COLOR_WHITE)
-  curses.init_pair(player_one_colors, curses.COLOR_BLACK, curses.COLOR_RED)
-  curses.init_pair(player_two_colors, curses.COLOR_WHITE, curses.COLOR_BLUE)
   # draw a grid
   window_size = screen.getmaxyx()
   assert (window_size[0] >= total_board_size) \
