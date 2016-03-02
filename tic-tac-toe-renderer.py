@@ -91,13 +91,8 @@ player_one_colors = 3
 player_two_colors = 4
 
 def main(screen):
-  assert curses.has_colors(), "This game requires a color terminal."
-  curses.init_pair(standard_colors, curses.COLOR_WHITE, curses.COLOR_BLACK)
-  curses.init_pair(border_colors, curses.COLOR_BLACK, curses.COLOR_WHITE)
-  curses.init_pair(player_one_colors, curses.COLOR_BLACK, curses.COLOR_RED)
-  curses.init_pair(player_two_colors, curses.COLOR_WHITE, curses.COLOR_BLUE)
-  curses.curs_set(0)
-  curses.mousemask(1)
+  verify(screen)
+  configure(screen)
   show_title(screen)
   game_loop(screen)
 
@@ -121,10 +116,6 @@ def game_loop(screen):
 def render_board(screen,game_state):
   screen.clear()
   # draw a grid
-  window_size = screen.getmaxyx()
-  assert (window_size[0] >= total_board_size) \
-         and (window_size[1] >= total_board_size), \
-         "Terminal must be at least %sx%s characters"%(total_board_size,total_board_size)
   # draw top bar
   color_attrs = [curses.color_pair(player_one_colors), curses.color_pair(player_two_colors)]
   chars = ["\\","/"]
@@ -134,8 +125,9 @@ def render_board(screen,game_state):
   # write player names on the top bar
   screen.attron(curses.color_pair(player_one_colors))
   screen.addstr(0,0,u"Φιλοκτήτης".encode('utf-8'))
-  player_two_name = u"米爾".encode('utf-8')
-  player_two_index = total_board_size - len(player_two_name)
+  matz = u"まつもとゆきひろ"
+  player_two_name = matz.encode('utf-8')
+  player_two_index = total_board_size - len(matz)
   screen.attron(curses.color_pair(player_two_colors))
   screen.addstr(0,player_two_index,player_two_name)
   # iterate over the entire board
@@ -152,10 +144,25 @@ def render_board(screen,game_state):
         y_index = y // tile_size
         if x_index is 1 and y_index is 1:
           screen.attron(curses.color_pair(player_one_colors))
-          screen.addch(y,x,'X')
+          screen.addstr(y,x,u'ま'.encode('utf-8'))
         if x_index is 2 and y_index is 2:
           screen.attron(curses.color_pair(player_two_colors))
-          screen.addch(y,x,'O')
+          screen.addstr(y,x,u'ま'.encode('utf-8'))
+
+def verify(screen):
+  window_size = screen.getmaxyx()
+  assert (window_size[0] >= total_board_size) \
+    and (window_size[1] >= total_board_size), \
+    "Terminal must be at least %sx%s characters"%(total_board_size,total_board_size)
+  assert curses.has_colors(), "This game requires a color terminal."
+
+def configure(screen):
+  curses.init_pair(standard_colors, curses.COLOR_WHITE, curses.COLOR_BLACK)
+  curses.init_pair(border_colors, curses.COLOR_BLACK, curses.COLOR_WHITE)
+  curses.init_pair(player_one_colors, curses.COLOR_BLACK, curses.COLOR_RED)
+  curses.init_pair(player_two_colors, curses.COLOR_WHITE, curses.COLOR_BLUE)
+  curses.curs_set(0) # hide cursor
+  curses.mousemask(1) # enable mouse support
 
 if __name__ == '__main__':
   curses.wrapper(main)
