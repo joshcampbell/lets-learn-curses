@@ -37,22 +37,37 @@ titles = ["""
   """]
 game_state = json.loads(open("./fixture.json").read())
 
+# set up global variables
+board_size = game_state["board"]["size"]
+origin_x = 0
+origin_y = 0
+border_width = 1
+square_size = 7
+tile_size = square_size + border_width
+total_board_size = square_size * board_size + (border_width * board_size)
+
 def main(screen):
   assert curses.has_colors(), "This game requires a color terminal."
+  curses.curs_set(0)
+  curses.mousemask(1)
   show_title(screen)
   game_loop(screen)
 
 def show_title(screen):
   screen.clear()
-  screen.addstr(0,0,random.choice(titles))
+  title = random.choice(titles)
+  screen.addstr(0,0,title)
   any_key = screen.getch()
 
 def game_loop(screen):
   while True:
-    # wait for user input
     render_board(screen,game_state)
     key_pressed = screen.getch() # TODO use mouse instead
-    
+    if key_pressed == ord('q'):
+      break
+    if key_pressed == curses.KEY_MOUSE:
+      _, y, x, __, click_type = curses.getmouse()
+      raise Exception(x//tile_size,y//tile_size)
 
 # NOTE built-in colors are:    
 # ['COLOR_BLACK', 'COLOR_BLUE', 'COLOR_CYAN', 'COLOR_GREEN', 'COLOR_MAGENTA', 'COLOR_RED', 'COLOR_WHITE', 'COLOR_YELLOW']
@@ -69,16 +84,10 @@ def render_board(screen,game_state):
   curses.init_pair(player_one_colors, curses.COLOR_BLACK, curses.COLOR_RED)
   curses.init_pair(player_two_colors, curses.COLOR_WHITE, curses.COLOR_BLUE)
   # draw a grid
-  board_size = game_state["board"]["size"]
-  origin_x = 0
-  origin_y = 0
-  border_width = 1
-  square_size = 12
-  total_board_size = square_size * board_size + (border_width * board_size)
   window_size = screen.getmaxyx()
   assert (window_size[0] >= total_board_size) \
          and (window_size[1] >= total_board_size), \
-         "Terminal must be at least %sx%s characters"%total_board_size
+         "Terminal must be at least %sx%s characters"%(total_board_size,total_board_size)
   # draw top bar
   color_attrs = [curses.color_pair(player_one_colors), curses.color_pair(player_two_colors)]
   chars = ["\\","/"]
@@ -96,7 +105,6 @@ def render_board(screen,game_state):
   board_range = range(1,total_board_size)
   for x in board_range:
     for y in board_range:
-      tile_size = square_size + border_width
       if (x % tile_size is 0 or y % tile_size is 0):
         # this is a border
         screen.attron(curses.color_pair(border_colors))
@@ -114,3 +122,4 @@ def render_board(screen,game_state):
 
 if __name__ == '__main__':
   curses.wrapper(main)
+  print "Thanks for playing!"
