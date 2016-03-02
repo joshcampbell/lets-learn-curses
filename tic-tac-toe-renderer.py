@@ -175,15 +175,15 @@ def draw_game_board(screen):
 
 def draw_top_bar(screen):
   # draw background
-  color_attrs = [curses.color_pair(player_one_colors), curses.color_pair(player_two_colors)]
-  for x in range(1,width(screen)):
-    screen.attron(color_attrs[x%2])
-    screen.addstr(0,x," ")
+#  color_attrs = [curses.color_pair(player_one_colors), curses.color_pair(player_two_colors)]
+#  for x in range(1,width(screen)):
+#    screen.attron(color_attrs[x%2])
+#    screen.addstr(0,x," ")
   # write player names
   screen.attron(curses.color_pair(player_one_colors))
   # TODO refer to actual game state via presenter
-  screen.addstr(0,0,u"Φιλοκτήτης".encode('utf-8'))
-  matz = "Beatrice"
+  screen.addstr(0,0,u"Φιλοκτήτης is \"X\"".encode('utf-8'))
+  matz = "Beatrice is \"O\""
   player_two_name = matz.encode('utf-8')
   player_two_index = width(screen) - len(matz)
   screen.attron(curses.color_pair(player_two_colors))
