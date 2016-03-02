@@ -1,3 +1,3 @@
 # Let's Learn Curses
 
-This started as a directory of the official python curses demos. I added a tick-tac-toe renderer and a fixture to it.
+This repo includes the official python curses demos. It also contains a rendering demo of a tic tac toe implementation I'm working on.
