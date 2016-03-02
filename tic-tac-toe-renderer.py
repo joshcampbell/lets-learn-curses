@@ -66,15 +66,32 @@ def render_board(screen,game_state):
   player_two_colors = 4
   curses.init_pair(standard_colors, curses.COLOR_WHITE, curses.COLOR_BLACK)
   curses.init_pair(border_colors, curses.COLOR_BLACK, curses.COLOR_WHITE)
-  curses.init_pair(player_one_colors, curses.COLOR_YELLOW, curses.COLOR_RED)
+  curses.init_pair(player_one_colors, curses.COLOR_BLACK, curses.COLOR_RED)
   curses.init_pair(player_two_colors, curses.COLOR_WHITE, curses.COLOR_BLUE)
   # draw a grid
   board_size = game_state["board"]["size"]
   origin_x = 0
   origin_y = 0
   border_width = 1
-  square_size = 10
+  square_size = 12
   total_board_size = square_size * board_size + (border_width * board_size)
+  window_size = screen.getmaxyx()
+  assert (window_size[0] >= total_board_size) \
+         and (window_size[1] >= total_board_size), \
+         "Terminal must be at least %sx%s characters"%total_board_size
+  # draw top bar
+  color_attrs = [curses.color_pair(player_one_colors), curses.color_pair(player_two_colors)]
+  chars = ["\\","/"]
+  for x in range(1,total_board_size):
+    screen.attron(color_attrs[x%2])
+    screen.addstr(0,x,chars[x%2])
+  # write player names
+  screen.attron(curses.color_pair(player_one_colors))
+  screen.addstr(0,0,"Alphonse")
+  player_two_name = "Beatrice"
+  player_two_index = total_board_size - len(player_two_name)
+  screen.attron(curses.color_pair(player_two_colors))
+  screen.addstr(0,player_two_index,player_two_name)
   # iterate over the entire board
   board_range = range(1,total_board_size)
   for x in board_range:
