@@ -1,0 +1,20 @@
+{ 
+  "board": {
+    "size": 3
+  },
+  "moves": [
+      {"position":[1,1], "player": "O"},
+      {"position":[3,3], "player": "X"}
+  ],
+  "players": [
+    {
+      "symbol": "X",  
+      "name": "Alphonse"
+    },
+    {
+      "symbol": "O",  
+      "name": "Beatrice"
+    }
+  ],
+  "active_player": "X"
+}
