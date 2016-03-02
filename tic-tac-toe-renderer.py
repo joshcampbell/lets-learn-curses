@@ -138,7 +138,7 @@ def game_loop(screen):
   while True:
     render_board(screen)
     key_pressed = screen.getch()
-    if key_pressed == ord('q'):
+    if key_pressed in [ord('q'),27]:
       break
     if key_pressed == curses.KEY_MOUSE:
       _, y, x, __, click_type = curses.getmouse()
@@ -212,6 +212,7 @@ def configure(screen):
   curses.init_pair(player_two_colors, curses.COLOR_BLACK, curses.COLOR_MAGENTA)
   curses.curs_set(0) # hide cursor
   curses.mousemask(1) # enable mouse support
+  curses.noecho()
 
 if __name__ == '__main__':
   # TODO prompt for player names and symbols
