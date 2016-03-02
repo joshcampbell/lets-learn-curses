@@ -1,10 +1,14 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 from __future__ import division
 
 import json
 import curses
 import random
+import locale
+
+locale.setlocale(locale.LC_ALL, '')
 
 titles = [
 """
@@ -80,7 +84,7 @@ square_size = 9
 tile_size = square_size + border_width
 total_board_size = square_size * board_size + (border_width * board_size)
 
-# establish colors
+# establish color palette indices
 standard_colors = 1
 border_colors = 2
 player_one_colors = 3
@@ -107,15 +111,12 @@ def show_title(screen):
 def game_loop(screen):
   while True:
     render_board(screen,game_state)
-    key_pressed = screen.getch() # TODO use mouse instead
+    key_pressed = screen.getch()
     if key_pressed == ord('q'):
       break
     if key_pressed == curses.KEY_MOUSE:
       _, y, x, __, click_type = curses.getmouse()
       raise Exception(x//tile_size,y//tile_size)
-
-# NOTE built-in colors are:    
-# ['COLOR_BLACK', 'COLOR_BLUE', 'COLOR_CYAN', 'COLOR_GREEN', 'COLOR_MAGENTA', 'COLOR_RED', 'COLOR_WHITE', 'COLOR_YELLOW']
 
 def render_board(screen,game_state):
   screen.clear()
@@ -130,10 +131,10 @@ def render_board(screen,game_state):
   for x in range(1,total_board_size):
     screen.attron(color_attrs[x%2])
     screen.addstr(0,x,chars[x%2])
-  # write player names
+  # write player names on the top bar
   screen.attron(curses.color_pair(player_one_colors))
-  screen.addstr(0,0,"Alphonse")
-  player_two_name = "Beatrice"
+  screen.addstr(0,0,u"Φιλοκτήτης".encode('utf-8'))
+  player_two_name = u"米爾".encode('utf-8')
   player_two_index = total_board_size - len(player_two_name)
   screen.attron(curses.color_pair(player_two_colors))
   screen.addstr(0,player_two_index,player_two_name)
